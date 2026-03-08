@@ -1,19 +1,37 @@
 #!/bin/sh
 set -eu
 
-DATA_DIR=/data
-CONFIG_FILE="$DATA_DIR/homeserver.yaml"
+CONFIG=/data/homeserver.yaml
 
-: "${SYNAPSE_SERVER_NAME:?missing SYNAPSE_SERVER_NAME}"
-: "${SYNAPSE_REPORT_STATS:=no}"
-
-if [ ! -f "$CONFIG_FILE" ]; then
-  echo "homeserver.yaml not found, generating it with migrate_config..."
-
+if [ ! -f "$CONFIG" ]; then
+  echo "Generating static config with migrate_config..."
   /start.py migrate_config
-
-  echo "generated $CONFIG_FILE"
 fi
 
-echo "starting synapse with $CONFIG_FILE"
+python3 - <<'PY'
+from pathlib import Path
+import yaml
+
+p = Path("/data/homeserver.yaml")
+cfg = yaml.safe_load(p.read_text())
+
+# Synapse behind Zeabur reverse proxy: disable direct TLS
+cfg["tls_certificate_path"] = None
+cfg["tls_private_key_path"] = None
+
+# Replace listeners with a simple HTTP listener behind proxy
+cfg["listeners"] = [{
+    "port": 8008,
+    "type": "http",
+    "tls": False,
+    "x_forwarded": True,
+    "resources": [
+        {"names": ["client", "federation"], "compress": False}
+    ],
+}]
+
+p.write_text(yaml.safe_dump(cfg, sort_keys=False))
+print("patched homeserver.yaml for reverse-proxy / no direct TLS")
+PY
+
 exec /start.py
