@@ -2,5 +2,5 @@ FROM matrixdotorg/synapse:latest
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
-
+EXPOSE 8008
 ENTRYPOINT ["/entrypoint.sh"]
