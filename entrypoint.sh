@@ -51,7 +51,7 @@ cfg["rc_login"] = {
     "per_second": 0.17,
     "burst_count": 3,
 }
-
+cfg["serve_server_wellknown"] = True
 
 p.write_text(yaml.safe_dump(cfg, sort_keys=False))
 print("patched homeserver.yaml for reverse-proxy / no direct TLS")
