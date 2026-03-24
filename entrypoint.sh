@@ -38,12 +38,12 @@ cfg["email"] = {
     "enable_notifs": True,
     "smtp_host": "smtp.protonmail.ch",
     "smtp_port": 587,
-    "smtp_user": smtp_user,
-    "smtp_pass": smtp_pass,
+    "smtp_user": "${SMTP_USER}",
+    "smtp_pass": "${SMTP_PASSWORD}",
     "require_transport_security": True,
-    "notif_from": f"Matrix <{notif_from}>",
+    "notif_from": "%(app)s <${NOTIF_FROM}>",
     "notif_for_new_users": False,
-    "client_base_url": client_base_url,
+    "client_base_url": "${CLIENT_BASE_URL}",
 }
 cfg["registrations_require_3pid"] = ["email"]
 # email rate limit
