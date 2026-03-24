@@ -30,6 +30,9 @@ cfg["listeners"] = [{
     ],
 }]
 
+# allow public register. You can change it if you don't want anyone have acess regist on homeserver
+cfg["enable_registration"] = True
+
 p.write_text(yaml.safe_dump(cfg, sort_keys=False))
 print("patched homeserver.yaml for reverse-proxy / no direct TLS")
 PY
